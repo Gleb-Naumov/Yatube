@@ -1,0 +1,44 @@
+<!-- templates/about/tech.html -->
+{% extends "base.html" %}
+{% block title|safe %}Технологии{% endblock %}
+{% block content %}
+{% comment %} Колонки с отступом сверху и снизу {% endcomment %}
+<div class="row">
+  <h1>Вот что я умею</h1>
+  {% comment %}
+    Боковой блок со списком технологий 
+    Займет всю ширину блока на мобильном
+    и 25% при размерах экрана ≥768px
+  {% endcomment %}
+  <aside class="col-12 col-md-3">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        Python
+      </li>
+      <li class="list-group-item">
+        Django
+      </li>
+    </ul>
+  </aside>
+  {% comment %}
+    Статья  
+    Займет всю ширину блока на мобильном
+    и 75% при размерах экрана ≥768px
+  {% endcomment %}
+  <article class="col-12 col-md-9">
+    <p>Для создание данного сайта я использовал framework <b>Django версии 2.2.19</b><br>
+        Если вы хотите посмотреть на мой проект из нутри вам нужно выполнить следующие действия:<br>
+        <ol>
+            <li>Зайти на мой <a href = 'https://github.com/Gleb-Naumov'>GitHub</a><br></li>
+            <li>Клонировать репозиторий hw02_community к себе на компьютер<br></li>
+            <li>Установить виртуальное окружение <i>python -m venv venv</i><br></li>
+            <li>Установить все зависимоти из файла <b>requirements.txt</b><br>
+                для этого нужно воспользоваться комадной <i>pip install -r requirements.txt</i><br></li>
+            <li>Запустить сервер можно командой <i>python3 manage.py runserver</i><br>
+                если команда выше не сработала введите команду <i>python manage.py runserver</i></li>
+        </ol>
+
+    </p>
+  </article>
+</div>
+{% endblock %}

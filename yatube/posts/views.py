@@ -8,8 +8,8 @@ from django.views.decorators.cache import cache_page
 
 @cache_page(20)
 def index(request):
-    post_list = Post.objects.all().order_by('-pub_date')
-    page_obj = get_page(request, post_list)
+    post_roster = Post.objects.all().order_by('-pub_date')
+    page_obj = get_page(request, post_roster)
     context = {
         'page_obj': page_obj,
     }
@@ -18,8 +18,8 @@ def index(request):
 
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
-    post_list = Post.objects.filter(group=group).order_by('-pub_date')
-    page_obj = get_page(request, post_list)
+    post_roster = Post.objects.filter(group=group).order_by('-pub_date')
+    page_obj = get_page(request, post_roster)
     context = {
         'group': group,
         'page_obj': page_obj,
@@ -31,9 +31,9 @@ def profile(request, username):
     author = (get_object_or_404(User.objects.
               prefetch_related('posts', 'posts__group'),
               username=username))
-    post_list = Post.objects.all().filter(author=author).order_by('-pub_date')
-    page_obj = get_page(request, post_list)
-    if not Follow.objects.filter(author=author).exists():
+    post_roster = Post.objects.all().filter(author=author).order_by('-pub_date')
+    page_obj = get_page(request, post_roster)
+    if not Follow.objects.filter(author=author).exists() and request.user.is_authenticated:
         following = False
     else:
         following = True
@@ -47,8 +47,7 @@ def profile(request, username):
 
 def post_detail(request, post_id):
     form = CommentForm(request.POST or None)
-    post = (get_object_or_404(Post.objects.select_related('author', 'group'),
-            id=post_id))
+    post = get_object_or_404(Post, id=post_id)
     comments = Comment.objects.all().filter(post=post_id)
     context = {
         'post': post,
@@ -109,10 +108,10 @@ def add_comment(request, post_id):
 
 @login_required
 def follow_index(request):
-    post_list = (Post.objects.all().
+    post_roster = (Post.objects.all().
                  filter(author__following__user=request.user).
                  order_by('-pub_date'))
-    page_obj = get_page(request, post_list)
+    page_obj = get_page(request, post_roster)
     follower_user = Follow.objects.all()
     context = {
         'follower_user': follower_user,
@@ -123,7 +122,7 @@ def follow_index(request):
 
 @login_required
 def profile_follow(request, username):
-    author = (get_object_or_404(User, username=username))
+    author = get_object_or_404(User, username=username)
     if author != request.user:
         Follow.objects.get_or_create(user=request.user, author=author)
     return redirect('posts:profile', username=username)
@@ -131,6 +130,6 @@ def profile_follow(request, username):
 
 @login_required
 def profile_unfollow(request, username):
-    author = (get_object_or_404(User, username=username))
+    author = get_object_or_404(User, username=username)
     Follow.objects.filter(user=request.user, author=author).delete()
     return redirect('posts:profile', username=username)

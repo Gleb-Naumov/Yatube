@@ -31,9 +31,11 @@ def profile(request, username):
     author = (get_object_or_404(User.objects.
               prefetch_related('posts', 'posts__group'),
               username=username))
-    post_roster = Post.objects.all().filter(author=author).order_by('-pub_date')
+    post_roster = (Post.objects.all().
+                   filter(author=author).order_by('-pub_date'))
     page_obj = get_page(request, post_roster)
-    if not Follow.objects.filter(author=author).exists() and request.user.is_authenticated:
+    if (not Follow.objects.filter(author=author).exists()
+            and request.user.is_authenticated):
         following = False
     else:
         following = True
@@ -109,8 +111,8 @@ def add_comment(request, post_id):
 @login_required
 def follow_index(request):
     post_roster = (Post.objects.all().
-                 filter(author__following__user=request.user).
-                 order_by('-pub_date'))
+                   filter(author__following__user=request.user).
+                   order_by('-pub_date'))
     page_obj = get_page(request, post_roster)
     follower_user = Follow.objects.all()
     context = {

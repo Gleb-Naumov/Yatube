@@ -34,8 +34,8 @@ def profile(request, username):
     post_roster = (Post.objects.all().
                    filter(author=author).order_by('-pub_date'))
     page_obj = get_page(request, post_roster)
-    if (not Follow.objects.filter(author=author).exists()
-            and request.user.is_authenticated):
+    if (not Follow.objects.
+            filter(user__id=request.user.id, author=author).exists()):
         following = False
     else:
         following = True
